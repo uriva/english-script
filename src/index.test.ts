@@ -12,3 +12,15 @@ Deno.test("basic", async () => {
   });
   assertEquals([53, 44].map(f), [true, false]);
 });
+
+Deno.test("complex", async () => {
+  const f = await makeFunction({
+    description: "is stop word",
+    testCases: [
+      ["building", false],
+      ["is", true],
+      ["growth", false],
+    ],
+  });
+  assertEquals(["that", "tree"].map(f), [true, false]);
+});
