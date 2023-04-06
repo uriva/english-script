@@ -46,13 +46,8 @@ export const cache = <X, Y>({
     .then(({ cache, write }) => (x: X) => {
       const keyResult = key(x);
       if (keyResult in cache) return Promise.resolve(cache[keyResult]);
-      const result = f(x);
-      if (result instanceof Promise) {
-        return result.then((x) => {
-          cache[keyResult] = x;
-          return write(serialize(cache)).then(() => x);
-        });
-      }
-      cache[keyResult] = result;
-      return write(serialize(cache)).then(() => result);
+      return f(x).then((x) => {
+        cache[keyResult] = x;
+        return write(serialize(cache)).then(() => x);
+      });
     });
