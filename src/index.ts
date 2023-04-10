@@ -10,9 +10,7 @@ import { isPureFunction } from "./purity.ts";
 import { localCache } from "https://raw.githubusercontent.com/uriva/remember/main/client/src/index.ts";
 
 const openai = new OpenAIApi(
-  new Configuration({
-    apiKey: config().openai_key,
-  }),
+  new Configuration({ apiKey: config().openai_key }),
 );
 
 const cachedOpenAI = (
@@ -41,9 +39,12 @@ output: ${output}`;
 
 const prefix = `Write a javascript function as dscribed below.
 It must be called \`f\`, it must be unary and the variable should be called \`x\`.
-No side effects or dependencies are allowed.
-Remove all whitespace from your answer, so it must start with \`function f(x){\` and must end with \`}\`.
-Your answer must be code that compiles only, no other text is allowed.
+No side effects or dependencies are allowed, so no \`console.log\` for example.
+Your answer must start with \`function f(x){\` and must end with \`}\`, bceause it's a single function.
+
+Your answer must be code that compiles only, no other text is allowed. No need to list the test cases.
+
+Please make the code as concise and as readable as you can, no repetitions.
 After the description there are test cases, go over each one and make sure your code works for them.
 
 Here is the function description:\n`;
