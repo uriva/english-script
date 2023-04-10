@@ -50,7 +50,8 @@ After the description there are test cases, go over each one and make sure your 
 Here is the function description:\n`;
 const getPrompt = (description: string, testCases: TestCase[]) => {
   let prompt = prefix + description;
-  if (prompt.length > maxPromptLength) throw "too long";
+  if (prompt.length > maxPromptLength)
+    throw `prompt is too long: ${description}`;
   for (const testCase of testCases) {
     const newPrompt = prompt + "\n\n" + testCaseToString(testCase);
     if (newPrompt.length > maxPromptLength) return prompt;
@@ -89,8 +90,8 @@ export const makeFunction = async ({
   testCases,
 }: Options): Promise<Unary> => {
   const code = await doPrompt(getPrompt(description, testCases));
-  if (!isPureFunction(code)) throw "impure code detected";
+  if (!isPureFunction(code)) throw `impure code detected: ${code}`;
   const f = Function("x", code.slice(14, code.length - 1)) as Unary;
-  if (!runTestCases(f, testCases)) throw "failed tests";
+  if (!runTestCases(f, testCases)) throw `failed tests: ${code}`;
   return f;
 };
