@@ -4,11 +4,10 @@ import {
   CreateChatCompletionResponseChoicesInner,
   OpenAIApi,
 } from "npm:openai";
-import { JSONValue, cache } from "./cache.ts";
 
-import { config } from "https://deno.land/x/dotenv/mod.ts";
+import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 import { isPureFunction } from "./purity.ts";
-import jsonStableStringify from "npm:json-stable-stringify";
+import { localCache } from "https://raw.githubusercontent.com/uriva/remember/main/client/src/index.ts";
 
 const openai = new OpenAIApi(
   new Configuration({
@@ -16,24 +15,24 @@ const openai = new OpenAIApi(
   }),
 );
 
-const cachedOpenAI = await cache({
-  key: jsonStableStringify,
-  name: "createChatCompletion",
-  f: (x: CreateChatCompletionRequest) =>
+const cachedOpenAI = (
+  await localCache<CreateChatCompletionRequest, OpenAIOutput>({
+    id: "createChatCompletion",
+  })
+)(
+  (x: CreateChatCompletionRequest): Promise<OpenAIOutput> =>
     openai.createChatCompletion(x).then((x) => x.data),
-});
+);
+
+type OpenAIOutput = {
+  choices: Array<CreateChatCompletionResponseChoicesInner>;
+};
 
 const doPrompt = (prompt: string) =>
   cachedOpenAI({
     model: "gpt-3.5-turbo",
     messages: [{ role: "user", content: prompt }],
-  }).then(
-    ({
-      choices,
-    }: {
-      choices: Array<CreateChatCompletionResponseChoicesInner>;
-    }) => choices[0].message?.content || "",
-  );
+  }).then(({ choices }: OpenAIOutput) => choices[0].message?.content || "");
 
 const maxPromptLength = 2400;
 
@@ -58,6 +57,13 @@ const getPrompt = (description: string, testCases: TestCase[]) => {
   }
   return prompt;
 };
+
+export type JSONValue =
+  | string
+  | number
+  | boolean
+  | { [x: string]: JSONValue }
+  | Array<JSONValue>;
 
 type TestCase = [JSONValue, JSONValue];
 type Unary = (input: JSONValue) => JSONValue;
