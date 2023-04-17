@@ -8,9 +8,7 @@ Embed natural language in your code.
 npm i english-script
 ```
 
-`english-script` expects your OpenAI key to be in an environment variable `openai_key`.
-
-You can then use it like so:
+Place your OpenAI key in an environment variable called `openai_key`.
 
 ```js
 const f = await makeFunction({
