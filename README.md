@@ -1,4 +1,4 @@
-# `promptly`
+# `english-script`
 
 Let me present this thought experiment in the form of a library.
 
@@ -30,11 +30,11 @@ How do we commit natural language alongside code and iterate on it, so that we c
 
 ## Solution
 
-`promptly` is a js library that allows you to embed natural language descriptions of pure functions inside your code seamlessly. It calls an LLM API in the background to get code and replace it on the fly.
+`english-script` is a js library that allows you to embed natural language descriptions of pure functions inside your code seamlessly. It calls an LLM API in the background to get code and replace it on the fly.
 
 ## Usage
 
-Promptly expects your OpenAI key to be in an environment variable `openai_key`.
+`english-script` expects your OpenAI key to be in an environment variable `openai_key`.
 
 You can then use it like so:
 

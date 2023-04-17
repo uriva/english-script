@@ -13,11 +13,9 @@ const openai = new OpenAIApi(
   new Configuration({ apiKey: config().openai_key }),
 );
 
-const cachedOpenAI = (
-  await localCache<CreateChatCompletionRequest, OpenAIOutput>({
-    id: "createChatCompletion",
-  })
-)(
+const cachedOpenAI = localCache<CreateChatCompletionRequest, OpenAIOutput>({
+  id: "createChatCompletion",
+})(
   (x: CreateChatCompletionRequest): Promise<OpenAIOutput> =>
     openai.createChatCompletion(x).then((x) => x.data),
 );
