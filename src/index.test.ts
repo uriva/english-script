@@ -15,7 +15,7 @@ Deno.test("basic", async () => {
 
 Deno.test("complex", async () => {
   const f = await makeFunction({
-    description: "is stop word",
+    description: "determine if a word is a stop word",
     testCases: [
       ["building", false],
       ["is", true],

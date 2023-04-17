@@ -7,7 +7,7 @@ import {
 
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 import { isPureFunction } from "./purity.ts";
-import { localCache } from "https://raw.githubusercontent.com/uriva/remember/main/client/src/index.ts";
+import { localCache } from "https://raw.githubusercontent.com/uriva/rmmbr/main/client/src/index.ts";
 
 const openai = new OpenAIApi(
   new Configuration({ apiKey: config().openai_key }),
