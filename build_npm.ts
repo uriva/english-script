@@ -11,7 +11,7 @@ await build({
   shims: { deno: true },
   package: {
     name: "english-script",
-    version: "0.0.1",
+    version: Deno.args[0],
     description: "Embed natural language in your code",
     license: "MIT",
     repository: {
