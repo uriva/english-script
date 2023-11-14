@@ -4,7 +4,7 @@ Embed natural language in your code.
 
 Allow me to completely take out of context this great Djikstra [essay](https://www.cs.utexas.edu/users/EWD/transcriptions/EWD06xx/EWD667.html):
 
-> Since the early days of automatic computing we have had people that have felt it as a shortcoming that programming required the care and accuracy that is characteristic for the use of any formal symbolism. They blamed the mechanical slave for its strict obedience with which it carried out its given instructions, even if a moment's thought would have revealed that those instructions contained an obvious mistake. "But a moment is a long time, and thought is a painful process." (A.E.Houseman). They eagerly hoped and waited for more sensible machinery that would refuse to embark on such nonsensical activities as a trivial clerical error evoked at the time...
+> It may be illuminating to try to imagine what would have happened if, right from the start our native tongue would have been the only vehicle for the input into and the output from our information processing equipment...
 
 -- Edsger W.Dijkstra
 
