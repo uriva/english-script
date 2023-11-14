@@ -6,6 +6,7 @@ import {
 } from "npm:openai";
 
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
+import { equal } from "https://deno.land/std@0.174.0/testing/asserts.ts";
 import { isPureFunction } from "./purity.ts";
 import { localCache } from "https://raw.githubusercontent.com/uriva/rmmbr/main/client/src/index.ts";
 
@@ -73,7 +74,7 @@ type Unary = (input: JSONValue) => JSONValue;
 const runTestCases = (f: Unary, testCases: TestCase[]) =>
   testCases.every(([input, expected]: TestCase) => {
     const actual = f(input);
-    const result = actual === expected;
+    const result = equal(actual, expected);
     if (!result)
       console.error(
         `generated function failed test \`${JSON.stringify(
