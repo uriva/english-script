@@ -26,14 +26,17 @@ type OpenAIOutput = {
 
 const doPrompt = (prompt: string) =>
   cachedOpenAI({
-    model: "gpt-3.5-turbo",
+    model: "gpt-4",
     messages: [{ role: "user", content: prompt }],
   }).then(({ choices }: OpenAIOutput) => choices[0].message?.content || "");
 
 const maxPromptLength = 2400;
 
-const testCaseToString = ([input, output]: TestCase) => `input: ${input}
-output: ${output}`;
+const testCaseToString = ([
+  input,
+  output,
+]: TestCase) => `input: ${JSON.stringify(input)}
+output: ${JSON.stringify(output)}`;
 
 const prefix = `Write a javascript function as dscribed below.
 It must be called \`f\`, it must be unary and the variable should be called \`x\`.
@@ -49,7 +52,7 @@ Here is the function description:\n`;
 const getPrompt = (description: string, testCases: TestCase[]) => {
   let prompt = prefix + description;
   if (prompt.length > maxPromptLength)
-    throw `prompt is too long: ${description}`;
+    throw new Error(`prompt is too long: ${description}`);
   for (const testCase of testCases) {
     const newPrompt = prompt + "\n\n" + testCaseToString(testCase);
     if (newPrompt.length > maxPromptLength) return prompt;
@@ -73,7 +76,11 @@ const runTestCases = (f: Unary, testCases: TestCase[]) =>
     const result = actual === expected;
     if (!result)
       console.error(
-        `generated function failed test \`${input}\` -> \`${actual}\` instead of \`${expected}\``,
+        `generated function failed test \`${JSON.stringify(
+          input,
+        )}\` -> \`${JSON.stringify(actual)}\` instead of \`${JSON.stringify(
+          expected,
+        )}\``,
       );
     return result;
   });
@@ -88,8 +95,8 @@ export const makeFunction = async ({
   testCases,
 }: Options): Promise<Unary> => {
   const code = await doPrompt(getPrompt(description, testCases));
-  if (!isPureFunction(code)) throw `impure code detected: ${code}`;
+  if (!isPureFunction(code)) throw new Error(`impure code detected: ${code}`);
   const f = Function("x", code.slice(14, code.length - 1)) as Unary;
-  if (!runTestCases(f, testCases)) throw `failed tests: ${code}`;
+  if (!runTestCases(f, testCases)) throw new Error(`failed tests: ${code}`);
   return f;
 };
