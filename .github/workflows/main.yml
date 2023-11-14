@@ -11,11 +11,11 @@ jobs:
       - name: Use Deno Version
         uses: denolib/setup-deno@v2
       - run: deno task build ${GITHUB_REF#refs/*/}
+        env:
+          OPENAI_API_KEY: ${{secrets.OPENAI_API_KEY}}
       - uses: actions/setup-node@v3
         with:
           registry-url: "https://registry.npmjs.org"
-        env:
-          OPENAI_API_KEY: ${{secrets.OPENAI_API_KEY}}
       - run: npm publish
         working-directory: dist
         env:
