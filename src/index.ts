@@ -33,10 +33,10 @@ const doPrompt = (prompt: string) =>
 
 const maxPromptLength = 2400;
 
-const testCaseToString = ([
-  input,
-  output,
-]: TestCase) => `input: ${JSON.stringify(input)}
+const testCaseToString = <Input, Output>([input, output]: TestCase<
+  Input,
+  Output
+>) => `input: ${JSON.stringify(input)}
 output: ${JSON.stringify(output)}`;
 
 const prefix = `Write a javascript function as dscribed below.
@@ -50,7 +50,10 @@ Please make the code as concise and as readable as you can, no repetitions.
 After the description there are test cases, go over each one and make sure your code works for them.
 
 Here is the function description:\n`;
-const getPrompt = (description: string, testCases: TestCase[]) => {
+const getPrompt = <Input, Output>(
+  description: string,
+  testCases: TestCase<Input, Output>[],
+) => {
   let prompt = prefix + description;
   if (prompt.length > maxPromptLength)
     throw new Error(`prompt is too long: ${description}`);
@@ -69,10 +72,13 @@ export type JSONValue =
   | { [x: string]: JSONValue }
   | Array<JSONValue>;
 
-type TestCase = [JSONValue, JSONValue];
-type Unary = (input: JSONValue) => JSONValue;
-const runTestCases = (f: Unary, testCases: TestCase[]) =>
-  testCases.every(([input, expected]: TestCase) => {
+type TestCase<Input, Output> = [Input, Output];
+
+const runTestCases = <F extends (input: any) => any>(
+  f: F,
+  testCases: TestCase<Parameters<F>[0], ReturnType<F>>[],
+) =>
+  testCases.every(([input, expected]) => {
     const actual = f(input);
     const result = equal(actual, expected);
     if (!result)
@@ -86,18 +92,20 @@ const runTestCases = (f: Unary, testCases: TestCase[]) =>
     return result;
   });
 
-type Options = {
+type Options<Input, Output> = {
   description: string;
-  testCases: TestCase[];
+  testCases: TestCase<Input, Output>[];
 };
 
-export const makeFunction = async ({
+export const makeFunction = async <Input, Output>({
   description,
   testCases,
-}: Options): Promise<Unary> => {
+}: Options<Input, Output>): Promise<(input: Input) => Output> => {
   const code = await doPrompt(getPrompt(description, testCases));
   if (!isPureFunction(code)) throw new Error(`impure code detected: ${code}`);
-  const f = Function("x", code.slice(14, code.length - 1)) as Unary;
+  const f = Function("x", code.slice(14, code.length - 1)) as (
+    input: Input,
+  ) => Output;
   if (!runTestCases(f, testCases)) throw new Error(`failed tests: ${code}`);
   return f;
 };
