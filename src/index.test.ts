@@ -11,7 +11,7 @@ Deno.test("basic", async () => {
       [4, false],
     ],
   });
-  await waitAllWrites()
+  await waitAllWrites();
   assertEquals([53, 44].map(f), [true, false]);
 });
 
@@ -22,10 +22,11 @@ Deno.test("complex", async () => {
       ["building", false],
       ["is", true],
       ["growth", false],
+      ["that", true],
     ],
   });
-  await waitAllWrites()
-  assertEquals(["that", "tree"].map(f), [true, false]);
+  await waitAllWrites();
+  assertEquals(["this", "tree"].map(f), [true, false]);
 });
 
 Deno.test("composite output / input", async () => {
@@ -46,7 +47,7 @@ Deno.test("composite output / input", async () => {
       ],
     ],
   });
-  await waitAllWrites()
+  await waitAllWrites();
   assertEquals(
     f([
       { name: "john", age: 99 },
