@@ -1,42 +1,32 @@
 import {
-  Configuration,
-  CreateChatCompletionRequest,
-  CreateChatCompletionResponseChoicesInner,
-  OpenAIApi,
-} from "npm:openai";
+  ChatCompletion,
+  ChatCompletionOptions,
+  OpenAI,
+} from "https://deno.land/x/openai@1.4.2/mod.ts";
 
-import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
+import { cache } from "https://deno.land/x/rmmbr@0.0.19/client/src/index.ts";
 import { equal } from "https://deno.land/std@0.174.0/testing/asserts.ts";
 import { isPureFunction } from "./purity.ts";
-import { localCache } from "https://raw.githubusercontent.com/uriva/rmmbr/main/client/src/index.ts";
 
-const openai = new OpenAIApi(
-  new Configuration({ apiKey: config().openai_key }),
+const openai = new OpenAI(Deno.env.get("openai_key")!);
+
+const cachedOpenAI = cache({ cacheId: "createChatCompletion" })(
+  (x: ChatCompletionOptions) => openai.createChatCompletion(x),
 );
-
-const cachedOpenAI = localCache<CreateChatCompletionRequest, OpenAIOutput>({
-  id: "createChatCompletion",
-})(
-  (x: CreateChatCompletionRequest): Promise<OpenAIOutput> =>
-    openai.createChatCompletion(x).then((x) => x.data),
-);
-
-type OpenAIOutput = {
-  choices: Array<CreateChatCompletionResponseChoicesInner>;
-};
 
 const doPrompt = (prompt: string) =>
   cachedOpenAI({
     model: "gpt-4",
     messages: [{ role: "user", content: prompt }],
-  }).then(({ choices }: OpenAIOutput) => choices[0].message?.content || "");
+  }).then(({ choices }: ChatCompletion) => choices[0].message?.content || "");
 
 const maxPromptLength = 2400;
 
 const testCaseToString = <Input, Output>([input, output]: TestCase<
   Input,
   Output
->) => `input: ${JSON.stringify(input)}
+>) =>
+  `input: ${JSON.stringify(input)}
 output: ${JSON.stringify(output)}`;
 
 const prefix = `Write a javascript function as dscribed below.
@@ -55,8 +45,9 @@ const getPrompt = <Input, Output>(
   testCases: TestCase<Input, Output>[],
 ) => {
   let prompt = prefix + description;
-  if (prompt.length > maxPromptLength)
+  if (prompt.length > maxPromptLength) {
     throw new Error(`prompt is too long: ${description}`);
+  }
   for (const testCase of testCases) {
     const newPrompt = prompt + "\n\n" + testCaseToString(testCase);
     if (newPrompt.length > maxPromptLength) return prompt;
@@ -81,14 +72,19 @@ const runTestCases = <F extends (input: any) => any>(
   testCases.every(([input, expected]) => {
     const actual = f(input);
     const result = equal(actual, expected);
-    if (!result)
+    if (!result) {
       console.error(
-        `generated function failed test \`${JSON.stringify(
-          input,
-        )}\` -> \`${JSON.stringify(actual)}\` instead of \`${JSON.stringify(
-          expected,
-        )}\``,
+        `generated function failed test \`${
+          JSON.stringify(
+            input,
+          )
+        }\` -> \`${JSON.stringify(actual)}\` instead of \`${
+          JSON.stringify(
+            expected,
+          )
+        }\``,
       );
+    }
     return result;
   });
 

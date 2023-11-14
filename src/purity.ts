@@ -1,4 +1,4 @@
-import esprima from "npm:esprima";
+import * as esprima from "npm:esprima";
 
 const { parseScript } = esprima;
 
@@ -26,17 +26,17 @@ const hasOsApiAccess = ({ type, expression }: ASTNode) =>
     expression.callee.name,
   );
 
-const hasConsoleAccess = (node: ASTNode) =>
-  node.type === "ExpressionStatement" &&
-  node.expression.type === "CallExpression" &&
-  node.expression.callee.type === "MemberExpression" &&
-  node.expression.callee.object.name === "console";
+const hasConsoleAccess = ({ type, expression }: ASTNode) =>
+  type === "ExpressionStatement" &&
+  expression.type === "CallExpression" &&
+  expression.callee.type === "MemberExpression" &&
+  expression.callee.object.name === "console";
 
-const hasSideEffects = (node: ASTNode) =>
-  node.type === "ExpressionStatement" &&
-  node.expression.type !== "CallExpression" &&
-  node.expression.type !== "Identifier" &&
-  node.expression.type !== "Literal";
+const hasSideEffects = ({ type, expression }: ASTNode) =>
+  type === "ExpressionStatement" &&
+  expression.type !== "CallExpression" &&
+  expression.type !== "Identifier" &&
+  expression.type !== "Literal";
 
 const hasVariableAccess = ({ type, expression }: ASTNode) =>
   type === "ExpressionStatement" &&

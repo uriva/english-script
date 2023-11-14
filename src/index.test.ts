@@ -1,5 +1,6 @@
 import { assertEquals } from "https://deno.land/std@0.174.0/testing/asserts.ts";
 import { makeFunction } from "./index.ts";
+import { waitAllWrites } from "https://deno.land/x/rmmbr@0.0.19/client/src/index.ts";
 
 Deno.test("basic", async () => {
   const f = await makeFunction({
@@ -10,6 +11,7 @@ Deno.test("basic", async () => {
       [4, false],
     ],
   });
+  await waitAllWrites()
   assertEquals([53, 44].map(f), [true, false]);
 });
 
@@ -22,6 +24,7 @@ Deno.test("complex", async () => {
       ["growth", false],
     ],
   });
+  await waitAllWrites()
   assertEquals(["that", "tree"].map(f), [true, false]);
 });
 
@@ -43,6 +46,7 @@ Deno.test("composite output / input", async () => {
       ],
     ],
   });
+  await waitAllWrites()
   assertEquals(
     f([
       { name: "john", age: 99 },
