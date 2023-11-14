@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           registry-url: "https://registry.npmjs.org"
+        env:
+          OPENAI_API_KEY: ${{secrets.OPENAI_API_KEY}}
       - run: npm publish
         working-directory: dist
         env:

@@ -3,7 +3,7 @@ import { cache } from "https://deno.land/x/rmmbr@0.0.19/client/src/index.ts";
 import { equal } from "https://deno.land/std@0.174.0/testing/asserts.ts";
 import { isPureFunction } from "./purity.ts";
 
-const openai = new OpenAI({ apiKey: Deno.env.get("openai_key")! });
+const openai = new OpenAI({ apiKey: Deno.env.get("OPENAI_API_KEY")! });
 
 const cachedOpenAI = cache({ cacheId: "createChatCompletion" })(
   (x) => openai.chat.completions.create(x),
