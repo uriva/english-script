@@ -74,13 +74,19 @@ const runTestCases = <F extends (input: any) => any>(
 (
   [input, expected]: TestCase<Parameters<F>[0], ReturnType<F>>,
 ) => {
-  const actual = f(input);
-  const result = equal(actual, expected);
-  return result
-    ? null
-    : `\`${JSON.stringify(input)}\` -> \`${
-      JSON.stringify(actual)
-    }\` instead of \`${JSON.stringify(expected)}\``;
+  try {
+    const actual = f(input);
+    const result = equal(actual, expected);
+    return result
+      ? null
+      : `\`${JSON.stringify(input)}\` -> \`${
+        JSON.stringify(actual)
+      }\` instead of \`${JSON.stringify(expected)}\``;
+  } catch (e) {
+    return `Threw an exception for input ${
+      JSON.stringify(input)
+    }. Here's the stack trace: ${e}`;
+  }
 };
 
 type Options<Input, Output> = {
