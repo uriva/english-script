@@ -1,9 +1,12 @@
 import { assertEquals } from "https://deno.land/std@0.174.0/testing/asserts.ts";
-import { makeFunction } from "./index.ts";
+import { makeFunctionWithKey } from "./index.ts";
 import { waitAllWrites } from "https://deno.land/x/rmmbr@0.0.19/client/src/index.ts";
+
+const makeFunction = makeFunctionWithKey(Deno.env.get("OPENAI_API_KEY")!);
 
 Deno.test("basic", async () => {
   const f = await makeFunction({
+    iterations: 2,
     description: "determine if prime",
     testCases: [
       [1, false], // By definition
@@ -17,6 +20,7 @@ Deno.test("basic", async () => {
 
 Deno.test("complex", async () => {
   const f = await makeFunction({
+    iterations: 2,
     description: "determine if a word is a stop word",
     testCases: [
       ["building", false],
@@ -31,6 +35,7 @@ Deno.test("complex", async () => {
 
 Deno.test("composite output / input", async () => {
   const f = await makeFunction({
+    iterations: 2,
     description: "sort object low to high by the `age` attribute",
     testCases: [
       [
