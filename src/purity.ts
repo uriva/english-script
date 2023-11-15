@@ -78,9 +78,7 @@ export const isPureFunction = (code: string) => {
 };
 
 export const functionBody = (code: string) => {
-  const arrowFunctionMatch = code.match(/=>\s*{([\s\S]+)}/);
-  const regularFunctionMatch = code.match(/{([\s\S]+)}/);
-  if (arrowFunctionMatch) return arrowFunctionMatch[1].trim();
-  if (regularFunctionMatch) return regularFunctionMatch[1].trim();
-  throw new Error("no function body found");
+  const firstOccurrenceOfBrace = code.indexOf("{");
+  const lastOccurrenceOfBrace = code.lastIndexOf("}");
+  return code.slice(firstOccurrenceOfBrace + 1, lastOccurrenceOfBrace);
 };

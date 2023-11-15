@@ -51,3 +51,24 @@ Deno.test("composite output / input", async () => {
     ],
   );
 });
+
+// Deno.test("multi-iteration", async () => {
+//   const cases: [string, string][] = [
+//     ["hi there", "hi there"],
+//     [
+//       `Uri: hello
+//     John: goodbye`,
+//       `hello\ngoodbye`,
+//     ],
+//     [
+//       `It's not fair! - Alex: Survival's not fair!`,
+//       "It's not fair! Survival's not fair",
+//     ],
+//   ];
+//   await makeFunction({
+//     description:
+//       "I have some text that contains a speaker and some text. the speaker may also appear mid text. I want to remove all the speaker strings. There might be a dash before the speaker name, remove it too",
+//     testCases: cases,
+//     iterations: 4,
+//   });
+// });
