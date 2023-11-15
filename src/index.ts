@@ -35,7 +35,7 @@ It must be called \`f\`, it must be unary and the variable should be called \`x\
 
 No side effects or dependencies are allowed, so no \`console.log\` for example.
 
-After the description there are test cases, go over each one and make sure your code works for them.
+After the description there are test cases, go over each one and make sure your code works for them. They might imply more requirements.
 
 Here is the function description:\n`;
 const getPrompt = <Input, Output>(

@@ -78,7 +78,9 @@ export const isPureFunction = (code: string) => {
 };
 
 export const functionBody = (code: string) => {
-  const match = /function\s*\w*\s*\([^)]*\)\s*{([^]*)}/.exec(code);
-  if (match?.[1]) return match[1].trim();
-  throw new Error();
+  const arrowFunctionMatch = code.match(/=>\s*{([\s\S]+)}/);
+  const regularFunctionMatch = code.match(/{([\s\S]+)}/);
+  if (arrowFunctionMatch) return arrowFunctionMatch[1].trim();
+  if (regularFunctionMatch) return regularFunctionMatch[1].trim();
+  throw new Error("no function body found");
 };
