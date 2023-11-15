@@ -14,10 +14,10 @@ Allow me to completely take out of context this great Djikstra [essay](https://w
 npm i english-script
 ```
 
-Place your OpenAI key in an environment variable called `openai_key`.
-
 ```js
 const f = await makeFunction({
+  apiKey: "your openai key here",
+  iterations: 4, // How many "turns" are given for the AI to get the function right.
   description: "determine if prime",
   testCases: [
     [1, false], // By definition
