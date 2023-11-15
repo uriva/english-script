@@ -63,10 +63,16 @@ const localEffects = [
 ];
 
 export const isPureFunction = (code: string) => {
-  const ast = parseScript(code);
-  return !(
-    ast.body.some((node: ASTNode) =>
-      localEffects.some((hasEffect) => hasEffect(node)),
-    ) || hasInputModification(ast)
-  );
+  try {
+    const ast = parseScript(code);
+    return !(
+      ast.body.some((node: ASTNode) =>
+        localEffects.some((hasEffect) => hasEffect(node))
+      ) || hasInputModification(ast)
+    );
+  } catch (e) {
+    console.error(e);
+    console.error(code);
+    throw e;
+  }
 };

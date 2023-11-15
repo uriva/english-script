@@ -1,3 +1,5 @@
+import { blue, yellow } from "https://deno.land/std@0.123.0/fmt/colors.ts";
+
 import { cache } from "https://deno.land/x/rmmbr@0.0.19/client/src/index.ts";
 import { equal } from "https://deno.land/std@0.174.0/testing/asserts.ts";
 import { isPureFunction } from "./purity.ts";
@@ -74,18 +76,11 @@ const runTestCases = <F extends (input: any) => any>(
 ) => {
   const actual = f(input);
   const result = equal(actual, expected);
-  if (result) return null;
-  const failure = `generated function failed test \`${
-    JSON.stringify(
-      input,
-    )
-  }\` -> \`${JSON.stringify(actual)}\` instead of \`${
-    JSON.stringify(
-      expected,
-    )
-  }\``;
-  console.error(failure);
-  return failure;
+  return result
+    ? null
+    : `\`${JSON.stringify(input)}\` -> \`${
+      JSON.stringify(actual)
+    }\` instead of \`${JSON.stringify(expected)}\``;
 };
 
 type Options<Input, Output> = {
@@ -95,10 +90,17 @@ type Options<Input, Output> = {
   iterations: number;
 };
 
-const cleanSurroundingQuotes = (code: string) =>
-  code.trim().startsWith("```")
-    ? code.trim().replace(/^```javascript/, "").replace(/```$/, "")
-    : code;
+const historyToLog = (messages: opanai.ChatCompletionMessageParam[]) =>
+  messages.map(({ role, content }) =>
+    (role === "user" ? blue : yellow)(role) + "\n" + content
+  ).join(
+    "\n\n",
+  );
+
+const extractCode = (input: string): string => {
+  const match = /```(?:\w+)?\s*([\s\S]+?)\s*```/g.exec(input);
+  return (match !== null) ? (match[1]) : input;
+};
 
 export const makeFunction = async <Input, Output>({
   apiKey,
@@ -114,7 +116,7 @@ export const makeFunction = async <Input, Output>({
     iterations--;
     const response = await nextMessage(apiKey)(messages);
     messages.push({ role: response.role, content: response.content! });
-    const code = cleanSurroundingQuotes(response.content!);
+    const code = extractCode(response.content!);
     if (!isPureFunction(code)) {
       messages.push({
         role: "user",
@@ -136,7 +138,7 @@ export const makeFunction = async <Input, Output>({
     });
   }
   throw new Error(
-    `failed generating code. history: ${JSON.stringify(messages)}`,
+    "Failed generating code. History:\n\n" + historyToLog(messages),
   );
 };
 
