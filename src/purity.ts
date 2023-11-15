@@ -76,3 +76,9 @@ export const isPureFunction = (code: string) => {
     throw e;
   }
 };
+
+export const functionBody = (code: string) => {
+  const match = /function\s*\w*\s*\([^)]*\)\s*{([^]*)}/.exec(code);
+  if (match?.[1]) return match[1].trim();
+  throw new Error();
+};

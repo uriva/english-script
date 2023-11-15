@@ -1,8 +1,8 @@
 import { blue, yellow } from "https://deno.land/std@0.123.0/fmt/colors.ts";
+import { functionBody, isPureFunction } from "./purity.ts";
 
 import { cache } from "https://deno.land/x/rmmbr@0.0.19/client/src/index.ts";
 import { equal } from "https://deno.land/std@0.174.0/testing/asserts.ts";
-import { isPureFunction } from "./purity.ts";
 import { default as opanai } from "npm:openai@4.17.5";
 
 const cachedOpenAI = (apiKey: string) =>
@@ -34,11 +34,7 @@ const prefix = `Write a javascript function as dscribed below.
 It must be called \`f\`, it must be unary and the variable should be called \`x\`.
 
 No side effects or dependencies are allowed, so no \`console.log\` for example.
-Your answer must start with \`function f(x){\` and must end with \`}\`, bceause it's a single function.
 
-Your answer must javascript code that compiles, no other text is allowed. No need to list the test cases.
-
-Please make the code as concise and as readable as you can, no repetitions.
 After the description there are test cases, go over each one and make sure your code works for them.
 
 Here is the function description:\n`;
@@ -130,7 +126,7 @@ export const makeFunction = async <Input, Output>({
       });
       continue;
     }
-    const f = Function("x", code.slice(14, code.length - 1)) as (
+    const f = Function("x", functionBody(code)) as (
       input: Input,
     ) => Output;
     const failures = testCases.map(runTestCases(f)).filter((x: string | null) =>
