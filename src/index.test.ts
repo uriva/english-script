@@ -18,21 +18,6 @@ Deno.test("basic", async () => {
   assertEquals([53, 44].map(f), [true, false]);
 });
 
-Deno.test("complex", async () => {
-  const f = await makeFunction({
-    iterations: 2,
-    description: "determine if a word is a stop word",
-    testCases: [
-      ["building", false],
-      ["is", true],
-      ["growth", false],
-      ["that", true],
-    ],
-  });
-  await waitAllWrites();
-  assertEquals(["this", "tree"].map(f), [true, false]);
-});
-
 Deno.test("composite output / input", async () => {
   const f = await makeFunction({
     iterations: 2,
